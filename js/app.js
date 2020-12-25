@@ -43,10 +43,15 @@ db.collection("cursos").get().then(function(querySnapshot) {
 });
 
 function validarform() {
-    var x = document.forms["nombre_form"]["search"].value;
-    if (x == "") {
-      alert("Name must be filled out");
-      return false;
+    
+    var x = document.forms["buscarform"]["text"].value;
+    console.log(x);
+
+    if (x !== "") {
+      
+    }else{
+        
+        return false;
     }
 
     //buscamos x en db
@@ -69,6 +74,12 @@ function cargarEventListener(){
     //gatilla on click pero mas complicado :v
     lista_cursos.addEventListener('click',agregarCurso);
     carrito.addEventListener('click', eliminarCurso);
+    //mandamos a llamar local storage
+    document.addEventListener('DOMContentLoaded',()=>{
+        articulosCarrito = JSON.parse(localStorage.getItem('Carrito')) || [];
+
+        llenarCarrito();
+    });
 
     vaciar_carrito.addEventListener('click', ()=>{
         articulosCarrito = []; // reset carro
@@ -118,23 +129,13 @@ function leerCurso(curso){
         articulosCarrito = [...articulosCarrito, infoCurso];
          //console.log(articulosCarrito);
 
-         //local storage 
-         articulosCarritoParseString = JSON.stringify(articulosCarrito);
-         localStorage.setItem('Carrito',articulosCarritoParseString);
+
     }
 
     llenarCarrito();
     
 }
-function revisarStorage(){
-    if (localStorage.getItem('Carrito') === null){
-        console.log(" no hay dato");
-    }else{
-        console.log("hay dato");
-        console.log(localStorage.getItem('Carrito'));
-    }
-    
-}
+
 
 //muestra carrito
 function llenarCarrito(){
@@ -163,11 +164,22 @@ function llenarCarrito(){
         contenedor_carrito.appendChild(row);
 
     })
+
+    revisarStorage();
 }
 
+function revisarStorage(){
+            //local storage 
+            articulosCarritoParseString = JSON.stringify(articulosCarrito);
+            localStorage.setItem('Carrito',articulosCarritoParseString);
+    
+}
+
+
 function limpiarTbody(){
-   //opcion 1 contenedor_carrito.innerHTML="";
-   //opcion 2
+   //eliminar carro contenedor_carrito.innerHTML="";
+   //eliminar el local storage
+   localStorage.clear();
    while(contenedor_carrito.firstChild){
        contenedor_carrito.removeChild(contenedor_carrito.firstChild)
    }
