@@ -14,47 +14,74 @@ function guardar(){
 //guardar();
 
 const container = document.getElementById('container-courses');
-
 //cache sin conexion
 var getOptions = {
     source: 'cache'
 };
-//all data from firestore
-db.collection("cursos").get().then(function(querySnapshot) {
-    querySnapshot.forEach(function(doc) {
-        container.innerHTML += `
-        <div class='four columns content-box'>
-            <div class='card'>
-                <img src='${doc.data().cursoImagen}' class='imagen-curso u-full-width' id='img-curso'>
-                <div class='info-card'>
-                       <div class='card-styles'>
-                        <h4 id='nombre-curso'>${doc.data().cursoNombre}</h4>
-                        <p class='autor-curso'>${doc.data().cursoAutor}</p>
-                        <p class='estrellas-curso' id='calificacion-curso'><span>${doc.data().cursoCalificacion} </span> Estrellas</p>
-                        <p class='precio' id='precio-curso'>$${doc.data().cursoValor}  <span class='u-pull-right'>$15</span></p>
-                       </div>
-                        <a href='#' class='u-full-width button-primary button input agregar-carrito' data-id='${doc.id}'>Agregar Al Carrito</a>
-                </div>
-            </div>
-        </div>`;
-        // doc.data() is never undefined for query doc snapshots data().recursodefirestore
-        // console.log( doc.data());
-    });
-});
 
-function validarform() {
+//all data from firestore
+function traerDatos(){
     
-    var x = document.forms["buscarform"]["text"].value;
-    console.log(x);
+    db.collection("cursos").get().then(function(querySnapshot) {
+        querySnapshot.forEach(function(doc) {
+            container.innerHTML += `
+            <div class='four columns content-box'>
+                <div class='card'>
+                    <img src='${doc.data().cursoImagen}' class='imagen-curso u-full-width' id='img-curso'>
+                    <div class='info-card'>
+                        <div class='card-styles'>
+                            <h4 id='nombre-curso'>${doc.data().cursoNombre}</h4>
+                            <p class='autor-curso'>${doc.data().cursoAutor}</p>
+                            <p class='estrellas-curso' id='calificacion-curso'><span>${doc.data().cursoCalificacion} </span> Estrellas</p>
+                            <p class='precio' id='precio-curso'>$${doc.data().cursoValor}  <span class='u-pull-right'>$15</span></p>
+                        </div>
+                            <a href='#' class='u-full-width button-primary button input agregar-carrito' data-id='${doc.id}'>Agregar Al Carrito</a>
+                    </div>
+                </div>
+            </div>`;
+            // doc.data() is never undefined for query doc snapshots data().recursodefirestore
+            // console.log( doc.data());
+        });
+    });
+}
+
+
+//buscamos todo o lo que quiera ver el user
+function validarform() {
+    var x = document.forms["buscarform"]["search"].value;
 
     if (x !== "") {
-      
+        //NO SIRVEEEEEE
+        let search = db.collection("cursos").where("cursoNombre", "==", x)
+        console.log(search.get());
+        search.get().then(function(querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+                container.innerHTML += `
+                <div class='four columns content-box'>
+                    <div class='card'>
+                        <img src='${doc.data().cursoImagen}' class='imagen-curso u-full-width' id='img-curso'>
+                        <div class='info-card'>
+                            <div class='card-styles'>
+                                <h4 id='nombre-curso'>${doc.data().cursoNombre}</h4>
+                                <p class='autor-curso'>${doc.data().cursoAutor}</p>
+                                <p class='estrellas-curso' id='calificacion-curso'><span>${doc.data().cursoCalificacion} </span> Estrellas</p>
+                                <p class='precio' id='precio-curso'>$${doc.data().cursoValor}  <span class='u-pull-right'>$15</span></p>
+                            </div>
+                                <a href='#' class='u-full-width button-primary button input agregar-carrito' data-id='${doc.id}'>Agregar Al Carrito</a>
+                        </div>
+                    </div>
+                </div>`;
+                });
+        })
+        .catch(function(error) {
+            console.log("Error getting documents: ", error);
+        });
+
+       return false;
     }else{
         
         return false;
     }
-
-    //buscamos x en db
 }
 
 //buscar
@@ -77,7 +104,7 @@ function cargarEventListener(){
     //mandamos a llamar local storage
     document.addEventListener('DOMContentLoaded',()=>{
         articulosCarrito = JSON.parse(localStorage.getItem('Carrito')) || [];
-
+        traerDatos();
         llenarCarrito();
     });
 
